@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artillery & Mortar Calculator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="calculator-card">
+        <h2>Artillery Calculator</h2>
+
+        <div id="toastWarning" class="toast-warning">
+            <span id="toastMessage"></span>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="section-group">
+            <div class="section-title">Weapon Configuration</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="weaponPreset">Preset Weapon</label>
+                    <select id="weaponPreset">
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="maxRange">Max Range (m)</label>
+                    <input type="number" id="maxRange" step="0.01" min="1" value="3000.00">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="coordScale">Coord-to-Distance Scale (multiplier)</label>
+                <input type="number" id="coordScale" step="0.01" min="0.01" value="100.00">
+                <small class="help-text">E.g., 100 means coord 107.10 = 10710m</small>
+            </div>
+        </div>
+
+        <!-- Position Setup Section -->
+        <div class="section-group">
+            <div class="section-title">Battery Position (Origin)</div>
+            <form id="originForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="originX">Origin X</label>
+                        <input type="number" id="originX" step="0.01" value="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="originY">Origin Y</label>
+                        <input type="number" id="originY" step="0.01" value="0.00" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-secondary">Set Origin</button>
+            </form>
+        </div>
+
+        <!-- Target Calculation Section -->
+        <div class="section-group">
+            <div class="section-title">Target Position</div>
+            <form id="targetForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="targetX">Target X</label>
+                        <input type="number" id="targetX" step="0.01" value="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="targetY">Target Y</label>
+                        <input type="number" id="targetY" step="0.01" value="0.00" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Calculate Firing Data</button>
+            </form>
+        </div>
+
+        <!-- Firing Solution Output -->
+        <div class="results-container" id="resultsCard">
+            <div class="result-box" id="distanceBox">
+                <span class="result-label">Distance</span>
+                <span class="result-value" id="distanceValue">0.00 m</span>
+            </div>
+            <div class="result-box">
+                <span class="result-label">Bearing</span>
+                <span class="result-value" id="bearingValue">0.00°</span>
+            </div>
+        </div>
+        <div class="warning-banner" id="warningBanner">
+            TARGET OUT OF RANGE
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

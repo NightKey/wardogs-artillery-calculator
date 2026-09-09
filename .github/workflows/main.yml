@@ -1,0 +1,54 @@
+name: Build Cross-Platform Releases
+
+on: push
+
+jobs:
+  compile-and-publish:
+    runs-on: self-hosted
+
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Build Linux Executable
+      shell: cmd
+      run: |
+        docker build --build-arg TAG=${{ github.ref_name }} -t ts-obs-linux -f docker .
+        docker create --name temp_linux ts-obs-linux
+        if not exist dist mkdir dist
+        docker cp temp_linux:/app/dist/Artillery-Calculator-Linux.tar.gz ./dist/Artillery-Calculator-Linux.tar.gz
+        docker cp temp_linux:/app/dist/Artillery-Calculator-Linux.tar.gz ./dist/Artillery-Calculator-Headless-Linux.tar.gz
+        docker cp temp_linux:/app/dist/readme.pdf ./dist/readme.pdf
+        docker rm temp_linux
+
+    - name: Build Windows Executable
+      shell: cmd
+      run: |
+        call .\create_executable.bat
+
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        name: Release
+        draft: false
+        prerelease: false
+        files: |
+          dist/Artillery-Calculator-Windows.zip
+          dist/Artillery-Calculator-Linux.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Cleanup
+      if: always()
+      shell: cmd
+      run: |
+        echo "Cleaning up local workspace build files..."
+        if exist "dist" rmdir /s /q "dist"
+        if exist "venv" rmdir /s /q "venv"
+        
+        echo "Cleaning up Docker builder cache and dangling images..."
+        docker image rm ts-obs-linux --force
+        docker system prune -f
